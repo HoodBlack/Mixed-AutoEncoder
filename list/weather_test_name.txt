@@ -1,0 +1,6 @@
+0 fire_sample_1000
+1 fogsmog
+2 lightning
+3 rain
+4 sandstorm
+5 snow
