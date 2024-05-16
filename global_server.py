@@ -5,6 +5,7 @@ import argparse
 import seaborn as sns
 import os
 import hashlib
+import transformers
 from transformers import pipeline
 from sklearn.metrics import confusion_matrix
 from PIL import Image
@@ -20,6 +21,7 @@ if __name__ =="__main__":
     args = parser.parse_args()
 
     #openning dataset
+    print(f'Openning file {args.file_name}')
     data = pd.read_csv(args.data_csv)
     if data is None:
         raise ValueError(f"NO File name : {args.data_csv}")
@@ -27,23 +29,42 @@ if __name__ =="__main__":
     Folders = target_data_csv['Folder']
     Files = target_data_csv['File']
     img_list = []
+    output_feature = []
+    batch_size = 1000
+
+    DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    pipe_224= pipeline(task="image-feature-extraction", model_name="vit_base_patch16_224", device=DEVICE, pool=True)
     
-    for Folder, File in zip(Folders,Files):
-        path = os.path.join(Folder,File)
-        path = os.path.join(args.file_directory, path)
-        img = Image.open(path)
-        img_list.append(img)
+    for i in range(0, len(Folders), batch_size):
+        batch_folders = Folders[i:i+batch_size]
+        batch_files = Files[i:i+batch_size]
+        batch_imgs = []
+        
+        for Folder, File in zip(batch_folders, batch_files):
+            path = os.path.join(Folder, File)
+            path = os.path.join(args.file_directory, path)
+            try:
+                img = Image.open(path)
+                batch_imgs.append(img)
+            except Exception as e:
+                print(f"Error opening image '{path}': {e}")
+        
+        batch_feature = pipe_224(batch_imgs)
+        output_feature.append(batch_feature)
     
-    if 'name' in target_data_csv.columns():
+        # Close opened images
+        for img in batch_imgs:
+            img.close()
+
+    print(f'Openning Successed!')
+    if 'name' in target_data_csv.columns:
         label = target_data_csv['name']
     else:
         raise ValueError(f'No label on dataset[\'name\']')
     
     n_cluster = len(label.unique())
+
     # Feature Extracting
-    DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    pipe_224= pipeline(task="image-feature-extraction", model_name="vit_base_patch16_224", device=DEVICE, pool=True)
-    output_feature = pipe_224(img_list)
     BK = BisectingKMeans(n_clusters = n_cluster, max_iter=args.max_iter)
     BK_y = BK.fit_predict(output_feature)
     conf_matrix = confusion_matrix(label, BK_y)

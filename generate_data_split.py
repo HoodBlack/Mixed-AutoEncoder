@@ -60,5 +60,5 @@ if __name__=="__main__":
             data_file.loc[point,'Position'] = set_name
 
     data_file.to_csv(f'./{args.file_name}',index=False)
-    print(f'File successfully created!')
+    print(f'File {args.file_name} successfully created!')
         
