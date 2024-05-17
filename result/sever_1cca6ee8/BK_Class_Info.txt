@@ -1,0 +1,34 @@
+Attributes:
+n_clusters: 10
+init: random
+max_iter: 100
+tol: 0.0001
+n_init: 1
+verbose: 0
+random_state: None
+copy_x: True
+algorithm: lloyd
+bisecting_strategy: biggest_inertia
+n_features_in_: 768
+_tol: 1.4779667161098578e-05
+_n_init: 1
+_random_state: RandomState(MT19937)
+_n_threads: 8
+_kmeans_single: <function _kmeans_single_lloyd at 0x7f71a1478af0>
+_bisecting_tree: <sklearn.cluster._bisect_k_means._BisectingTree object at 0x7f718998ab90>
+labels_: [4 4 4 ... 1 1 1]
+cluster_centers_: [[ 0.58611162 -0.23978409  0.57510996 ...  0.45660798  0.09703894
+  -0.17368156]
+ [-0.26915463 -0.23064906  0.32907323 ... -0.0885938  -0.3877149
+  -0.0311883 ]
+ [ 0.17218851  0.33853112  0.73230364 ...  0.30441064  0.02192412
+   0.06892793]
+ ...
+ [-0.39512324 -0.08537021 -0.15890902 ... -0.44062987  0.07146867
+   0.35875146]
+ [ 0.1399781   0.0874892   0.47367958 ...  0.4119133   0.01882498
+   0.39187103]
+ [ 0.24687631 -0.52332593  0.11278308 ...  0.51939737  0.118722
+   0.30678222]]
+inertia_: 348120.28183275874
+_n_features_out: 10

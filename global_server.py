@@ -10,6 +10,7 @@ from transformers import pipeline
 from sklearn.metrics import confusion_matrix
 from PIL import Image
 from sklearn.cluster import BisectingKMeans
+import numpy as np
 
 
 if __name__ =="__main__":
@@ -50,12 +51,16 @@ if __name__ =="__main__":
                 print(f"Error opening image '{path}': {e}")
         
         batch_feature = pipe_224(batch_imgs)
-        output_feature.append(batch_feature)
+        batch_feature = np.array(batch_feature)
+        batch_feature_flat = batch_feature.reshape(batch_feature.shape[0], -1)
+    
+        output_feature.append(batch_feature_flat)
     
         # Close opened images
         for img in batch_imgs:
             img.close()
 
+    output_feature = np.concatenate(output_feature, axis=0)
     print(f'Openning Successed!')
     if 'name' in target_data_csv.columns:
         label = target_data_csv['name']
@@ -67,7 +72,13 @@ if __name__ =="__main__":
     # Feature Extracting
     BK = BisectingKMeans(n_clusters = n_cluster, max_iter=args.max_iter)
     BK_y = BK.fit_predict(output_feature)
-    conf_matrix = confusion_matrix(label, BK_y)
+
+    #Needs a fix
+    names = ['Penguin','Dog','Cheetah','Plane','Zeppelin','Ship','SoccerBall','Car','Truck','Orange']
+    cluster_to_name = {i: names[i] for i in range(n_cluster)}
+    BK_y_named = [cluster_to_name[label] for label in BK_y]
+
+    conf_matrix = confusion_matrix(label, BK_y_named)
     sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues")
     plt.xlabel('Predicted Label')
     plt.ylabel('Class')
@@ -85,6 +96,7 @@ if __name__ =="__main__":
             continue
         total_info+=f"{attr}: {value}\n"
     total_info_path = os.path.join(result_path,"./BK_Class_Info.txt")
+
     with open(total_info_path,"w") as file:
         file.write(total_info)
-    print("All Information Saved in {result_path}!")
+    print(f"All Information Saved in {result_path}!")
