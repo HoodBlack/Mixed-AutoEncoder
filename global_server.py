@@ -94,7 +94,14 @@ if __name__ =="__main__":
     for attr, value in BK.__dict__.items():
         if '_X_mean' in attr:
             continue
-        total_info+=f"{attr}: {value}\n"
+
+        total_info += f"{attr}: {str(value)}\n"
+        
+    label_txt = np.array(BK.labels_)
+    center_txt = np.array(BK.cluster_centers_)
+    np.savetxt(os.path.join(result_path,"./BK_label_Info.txt"), label_txt, fmt='%d', delimiter=',')
+    np.savetxt(os.path.join(result_path,"./BK_centerpoint_info.txt"), center_txt, fmt='%.6f', delimiter=',')
+
     total_info_path = os.path.join(result_path,"./BK_Class_Info.txt")
 
     with open(total_info_path,"w") as file:
