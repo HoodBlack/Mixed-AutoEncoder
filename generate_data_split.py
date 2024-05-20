@@ -57,8 +57,8 @@ if __name__=="__main__":
         names = ['Penguin','Dog','Cheetah','Plane', 'Zeppelin','Ship','SoccerBall','Car','Truck','Orange']
         name_dict = {cls: name for cls, name in zip(classes, names)}
         data_file['name'] = [name_dict[name] for name in data_file['Folder']]
-
-    if args.mode == 'unifrom':
+        
+    if args.mode == 'uniform':
         print("mode - uniform")
         for folder in folders:
             target_file = data_file[data_file['Folder']==folder]
